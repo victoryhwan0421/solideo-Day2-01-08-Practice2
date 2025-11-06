@@ -20,6 +20,7 @@ const appState = {
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
+    initEventListeners();
 });
 
 // Leaflet 지도 초기화
@@ -28,7 +29,10 @@ function initMap() {
     const defaultLocation = [37.5665, 126.9780];
 
     // 메인 지도 초기화
-    map = L.map('map').setView(defaultLocation, 13);
+    map = L.map('map', {
+        zoomControl: true,
+        attributionControl: true
+    }).setView(defaultLocation, 13);
 
     // OpenStreetMap 타일 레이어 추가
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -100,8 +104,6 @@ function initMap() {
             setDestinationPin([e.latlng.lat, e.latlng.lng]);
         }
     });
-
-    initEventListeners();
 }
 
 // 역지오코딩 (좌표 -> 주소) - Nominatim API 사용
@@ -130,14 +132,14 @@ function reverseGeocode(location) {
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
-    // 여행 탐색 버튼
+    // 여행 탐색 버튼 - 사이드바 열기
     document.getElementById('exploreTravelBtn').addEventListener('click', () => {
-        document.getElementById('travelPopup').classList.add('active');
+        openPlanSidebar();
     });
 
-    // 팝업 닫기 버튼
-    document.querySelector('.close-btn').addEventListener('click', () => {
-        document.getElementById('travelPopup').classList.remove('active');
+    // 여행 계획 사이드바 닫기
+    document.getElementById('closePlanSidebar').addEventListener('click', () => {
+        closePlanSidebar();
     });
 
     // 목적지 찾기 버튼
@@ -153,7 +155,7 @@ function initEventListeners() {
     // 핀 확인 버튼
     document.getElementById('confirmPinBtn').addEventListener('click', confirmPin);
 
-    // 교통수단 선택 버튼
+    // 교통수단 선택 버튼 - 교통수단 사이드바로 전환
     document.getElementById('nextToTransportBtn').addEventListener('click', () => {
         if (!appState.destination) {
             alert('목적지를 설정해주세요.');
@@ -163,9 +165,25 @@ function initEventListeners() {
         appState.departureTime = document.getElementById('departureTime').value;
         appState.travelDuration = document.getElementById('travelDuration').value;
 
-        document.getElementById('travelPopup').classList.remove('active');
-        showPage('transportPage');
-        loadTransportInfo();
+        // 여행 계획 사이드바 닫고 교통수단 사이드바 열기
+        closePlanSidebar();
+        setTimeout(() => {
+            openTransportSidebar();
+            loadTransportInfo();
+        }, 400);
+    });
+
+    // 교통수단 사이드바 닫기
+    document.getElementById('closeTransportSidebar').addEventListener('click', () => {
+        closeTransportSidebar();
+    });
+
+    // 교통수단에서 뒤로 가기
+    document.getElementById('backToPlan').addEventListener('click', () => {
+        closeTransportSidebar();
+        setTimeout(() => {
+            openPlanSidebar();
+        }, 400);
     });
 
     // 여행 정보 보기 버튼
@@ -174,13 +192,19 @@ function initEventListeners() {
             alert('교통수단을 선택해주세요.');
             return;
         }
-        showPage('travelInfoPage');
 
-        // 지도 크기 재조정 (페이지 전환 후)
+        // 모든 사이드바 닫고 여행 정보 페이지 열기
+        closeTransportSidebar();
         setTimeout(() => {
-            routeMap.invalidateSize();
-            loadTravelInfo();
-            displayRoute();
+            showTravelInfoPage();
+        }, 400);
+    });
+
+    // 여행 정보 페이지에서 뒤로 가기
+    document.getElementById('backFromTravelInfo').addEventListener('click', () => {
+        hideTravelInfoPage();
+        setTimeout(() => {
+            openTransportSidebar();
         }, 100);
     });
 
@@ -205,6 +229,47 @@ function initEventListeners() {
             loadTravelInfo(btn.dataset.info);
         });
     });
+}
+
+// 사이드바 제어 함수들
+function openPlanSidebar() {
+    document.getElementById('homeContent').classList.add('hidden');
+    document.getElementById('planSidebar').classList.add('active');
+    setTimeout(() => map.invalidateSize(), 100);
+}
+
+function closePlanSidebar() {
+    document.getElementById('planSidebar').classList.remove('active');
+    setTimeout(() => {
+        document.getElementById('homeContent').classList.remove('hidden');
+        map.invalidateSize();
+    }, 400);
+}
+
+function openTransportSidebar() {
+    document.getElementById('transportSidebar').classList.add('active');
+    setTimeout(() => map.invalidateSize(), 100);
+}
+
+function closeTransportSidebar() {
+    document.getElementById('transportSidebar').classList.remove('active');
+    setTimeout(() => {
+        document.getElementById('homeContent').classList.remove('hidden');
+        map.invalidateSize();
+    }, 400);
+}
+
+function showTravelInfoPage() {
+    document.getElementById('travelInfoPage').classList.add('active');
+    setTimeout(() => {
+        routeMap.invalidateSize();
+        loadTravelInfo();
+        displayRoute();
+    }, 100);
+}
+
+function hideTravelInfoPage() {
+    document.getElementById('travelInfoPage').classList.remove('active');
 }
 
 // 목적지 찾기 - Nominatim Geocoding API 사용
@@ -314,17 +379,6 @@ function confirmPin() {
             document.getElementById('pinControls').style.display = 'none';
             alert('목적지가 설정되었습니다.');
         });
-}
-
-// 페이지 전환
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-
-    // 지도가 있는 페이지로 전환 시 크기 재조정
-    if (pageId === 'mainPage') {
-        setTimeout(() => map.invalidateSize(), 100);
-    }
 }
 
 // 교통수단 정보 로드
@@ -700,6 +754,5 @@ function displayRoute() {
     });
 }
 
-// 윈도우 로드 시 전역 함수 등록
-window.showPage = showPage;
+// 전역 함수 등록
 window.selectTransport = selectTransport;

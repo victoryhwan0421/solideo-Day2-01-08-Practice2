@@ -6,134 +6,271 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
-/* 페이지 전환 */
-.page {
-    display: none;
-    width: 100vw;
-    height: 100vh;
-}
-
-.page.active {
-    display: flex;
-    flex-direction: column;
-}
-
-/* 헤더 */
-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
-}
-
-header h1 {
-    color: white;
-    font-size: 24px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-/* 버튼 스타일 */
-.explore-btn {
-    background: #4285f4;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-
-.explore-btn:hover {
-    background: #357ae8;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.back-btn {
-    background: rgba(255,255,255,0.9);
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-    background: white;
-}
-
-/* 지도 */
-#map, #routeMap {
-    width: 100%;
-    height: 100%;
-}
-
-/* 팝업 */
-.popup {
-    display: none;
+/* ============ 지도 배경 ============ */
+.map-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
+    z-index: 0;
 }
 
-.popup.active {
-    display: flex;
-}
-
-.popup-content {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
-    overflow-y: auto;
+/* ============ 홈페이지 콘텐츠 ============ */
+.home-content {
     position: relative;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    z-index: 10;
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(66, 133, 244, 0.95) 0%, rgba(25, 103, 210, 0.9) 100%);
+    transition: transform 0.4s ease;
 }
 
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    color: #999;
-    cursor: pointer;
-    transition: color 0.3s ease;
+.home-content.hidden {
+    transform: translateX(-100%);
 }
 
-.close-btn:hover {
-    color: #333;
+/* 네비게이션 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.popup-content h2 {
-    margin-bottom: 24px;
-    color: #333;
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.logo-icon {
+    font-size: 32px;
+}
+
+.logo-text {
     font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-.form-group {
+.explore-btn {
+    background: white;
+    color: #4285f4;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    position: relative;
+}
+
+.explore-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: #f8f9fa;
+}
+
+.explore-btn:active {
+    transform: translateY(0);
+}
+
+/* 히어로 섹션 */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero-title {
+    font-size: 56px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 24px;
+    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.hero-cta {
+    background: white;
+    color: #4285f4;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+}
+
+.hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.cta-arrow {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.hero-cta:hover .cta-arrow {
+    transform: translateX(5px);
+}
+
+/* 기능 카드 섹션 */
+.features-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 60px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    font-size: 48px;
     margin-bottom: 20px;
+}
+
+.feature-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.feature-desc {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+/* ============ 사이드바 (공통) ============ */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -450px;
+    width: 450px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 200;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+.sidebar-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+}
+
+.sidebar-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #666;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.sidebar-close:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #4285f4;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+    background: #e8f0fe;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 24px;
 }
 
 .form-group label {
@@ -146,16 +283,17 @@ header h1 {
 
 .form-group input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: #4285f4;
+    background: #f8f9ff;
 }
 
 .input-with-btn {
@@ -171,47 +309,55 @@ header h1 {
     background: #34a853;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
     white-space: nowrap;
 }
 
 .find-btn:hover {
     background: #2d8e47;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
 }
 
+/* 핀 컨트롤 */
 .pin-controls {
-    background: #e8f0fe;
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 2px dashed #4285f4;
+}
+
+.pin-message {
+    color: #1967d2;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
     text-align: center;
 }
 
-.pin-controls p {
-    color: #1967d2;
-    margin-bottom: 12px;
-    font-size: 14px;
-}
-
 .confirm-btn {
+    width: 100%;
     background: #1967d2;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .confirm-btn:hover {
     background: #1557b0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 103, 210, 0.3);
 }
 
 .next-btn {
@@ -219,36 +365,36 @@ header h1 {
     background: #4285f4;
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    margin-top: auto;
 }
 
 .next-btn:hover {
     background: #357ae8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
 }
 
-/* 교통수단 페이지 */
-#transportPage {
-    padding-top: 80px;
-}
-
+/* ============ 탭 (교통수단 사이드바) ============ */
 .tabs {
     display: flex;
-    padding: 0 20px;
-    gap: 8px;
+    padding: 0 16px;
+    gap: 6px;
     overflow-x: auto;
-    border-bottom: 1px solid #ddd;
-    background: white;
+    border-bottom: 2px solid #e0e0e0;
+    background: #f8f9fa;
+    flex-shrink: 0;
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 16px 20px;
+    padding: 14px 16px;
     font-size: 14px;
     font-weight: 600;
     color: #666;
@@ -256,10 +402,12 @@ header h1 {
     border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
     white-space: nowrap;
+    position: relative;
 }
 
 .tab-btn:hover {
     color: #4285f4;
+    background: rgba(66, 133, 244, 0.05);
 }
 
 .tab-btn.active {
@@ -270,7 +418,6 @@ header h1 {
 .tab-content {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
 }
 
 .tab-pane {
@@ -281,28 +428,33 @@ header h1 {
     display: block;
 }
 
+/* 교통수단 리스트 */
 .transport-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    padding: 16px 0;
 }
 
 .transport-item {
-    background: white;
-    padding: 20px;
+    background: #f8f9fa;
+    padding: 18px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .transport-item:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    background: white;
+    border-color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
 }
 
 .transport-item.selected {
-    border: 2px solid #4285f4;
+    background: #e8f0fe;
+    border-color: #4285f4;
 }
 
 .transport-header {
@@ -313,13 +465,13 @@ header h1 {
 }
 
 .transport-type {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
     color: #333;
 }
 
 .transport-price {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     color: #4285f4;
 }
@@ -327,7 +479,7 @@ header h1 {
 .transport-details {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     color: #666;
     font-size: 14px;
 }
@@ -336,6 +488,7 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 500;
 }
 
 .route-arrow {
@@ -344,35 +497,54 @@ header h1 {
 
 .loading {
     text-align: center;
-    padding: 40px;
+    padding: 40px 20px;
     color: #999;
     font-size: 14px;
 }
 
-#nextToTravelInfoBtn {
+/* ============ 여행 정보 페이지 (전체 화면) ============ */
+.page {
+    display: none;
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    max-width: 600px;
-    margin: 0 auto;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 300;
 }
 
-/* 여행 정보 페이지 */
-#travelInfoPage {
-    padding-top: 80px;
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-header {
+    padding: 20px 24px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 10;
+}
+
+.page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
 }
 
 .travel-info-container {
     display: flex;
-    width: 100%;
-    height: calc(100vh - 80px);
+    flex: 1;
+    overflow: hidden;
 }
 
-.sidebar {
+.info-sidebar {
     width: 400px;
     background: white;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -380,7 +552,8 @@ header h1 {
 
 .info-tabs {
     display: flex;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #e0e0e0;
+    background: #f8f9fa;
 }
 
 .info-tab-btn {
@@ -398,6 +571,7 @@ header h1 {
 
 .info-tab-btn:hover {
     color: #4285f4;
+    background: rgba(66, 133, 244, 0.05);
 }
 
 .info-tab-btn.active {
@@ -414,7 +588,7 @@ header h1 {
 .info-item {
     background: #f8f9fa;
     padding: 16px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -422,11 +596,13 @@ header h1 {
 
 .info-item:hover {
     background: #e8f0fe;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .info-item-title {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     color: #333;
     margin-bottom: 8px;
 }
@@ -434,13 +610,14 @@ header h1 {
 .info-item-description {
     font-size: 14px;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    line-height: 1.5;
 }
 
 .info-item-meta {
     display: flex;
-    gap: 12px;
-    font-size: 12px;
+    gap: 16px;
+    font-size: 13px;
     color: #999;
 }
 
@@ -449,9 +626,68 @@ header h1 {
     position: relative;
 }
 
-/* 반응형 */
+#routeMap {
+    width: 100%;
+    height: 100%;
+}
+
+/* ============ 스크롤바 스타일 ============ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+/* ============ 반응형 디자인 ============ */
 @media (max-width: 768px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .features-section {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+    }
+
     .sidebar {
+        width: 100%;
+        left: -100%;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .navbar {
+        padding: 16px 20px;
+    }
+
+    .logo-text {
+        font-size: 20px;
+    }
+
+    .explore-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .info-sidebar {
         width: 100%;
         max-height: 40vh;
     }
@@ -465,21 +701,21 @@ header h1 {
     }
 }
 
-/* 스크롤바 스타일 */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 28px;
+    }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
+    .hero-section {
+        padding: 40px 20px;
+    }
 
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
+    .tabs {
+        gap: 4px;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    .tab-btn {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
 }
