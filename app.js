@@ -6,10 +6,7 @@ let destinationLocation;
 let destinationMarker;
 let originMarker;
 let currentPin;
-let directionsService;
-let directionsRenderer;
-let placesService;
-let geocoder;
+let routingControl;
 
 // 앱 상태
 const appState = {
@@ -20,96 +17,115 @@ const appState = {
     selectedTransport: null
 };
 
-// 구글맵 초기화
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    initMap();
+});
+
+// Leaflet 지도 초기화
 function initMap() {
     // 기본 위치 (서울시청)
-    const defaultLocation = { lat: 37.5665, lng: 126.9780 };
+    const defaultLocation = [37.5665, 126.9780];
 
     // 메인 지도 초기화
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: defaultLocation,
-        zoom: 15,
-        mapTypeControl: true,
-        streetViewControl: false,
-        fullscreenControl: false
-    });
+    map = L.map('map').setView(defaultLocation, 13);
+
+    // OpenStreetMap 타일 레이어 추가
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
 
     // 여행 정보 페이지의 지도 초기화
-    routeMap = new google.maps.Map(document.getElementById('routeMap'), {
-        center: defaultLocation,
-        zoom: 13,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
-    });
+    routeMap = L.map('routeMap').setView(defaultLocation, 13);
 
-    // Google Maps 서비스 초기화
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer({
-        map: routeMap,
-        suppressMarkers: false
-    });
-    geocoder = new google.maps.Geocoder();
-    placesService = new google.maps.places.PlacesService(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(routeMap);
 
     // 현재 위치 가져오기
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                currentLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                map.setCenter(currentLocation);
+                currentLocation = [position.coords.latitude, position.coords.longitude];
+                map.setView(currentLocation, 15);
 
                 // 현재 위치 마커 생성
-                originMarker = new google.maps.Marker({
-                    position: currentLocation,
-                    map: map,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: '#4285f4',
-                        fillOpacity: 1,
-                        strokeColor: 'white',
-                        strokeWeight: 3
-                    },
-                    title: '현재 위치'
-                });
+                originMarker = L.circleMarker(currentLocation, {
+                    color: '#4285f4',
+                    fillColor: '#4285f4',
+                    fillOpacity: 1,
+                    radius: 10,
+                    weight: 3
+                }).addTo(map);
 
-                // 출발지 입력창에 현재 위치 좌표 표시
+                originMarker.bindPopup('현재 위치').openPopup();
+
+                // 출발지 입력창에 현재 위치 좌표로 역지오코딩
                 reverseGeocode(currentLocation);
             },
-            () => {
+            (error) => {
                 console.log('위치 정보를 가져올 수 없습니다. 기본 위치를 사용합니다.');
                 currentLocation = defaultLocation;
+
+                originMarker = L.circleMarker(currentLocation, {
+                    color: '#4285f4',
+                    fillColor: '#4285f4',
+                    fillOpacity: 1,
+                    radius: 10,
+                    weight: 3
+                }).addTo(map);
+
+                reverseGeocode(currentLocation);
             }
         );
     } else {
         currentLocation = defaultLocation;
+
+        originMarker = L.circleMarker(currentLocation, {
+            color: '#4285f4',
+            fillColor: '#4285f4',
+            fillOpacity: 1,
+            radius: 10,
+            weight: 3
+        }).addTo(map);
+
+        reverseGeocode(currentLocation);
     }
 
     // 지도 클릭 이벤트 (핀 설정용)
-    map.addListener('click', (e) => {
+    map.on('click', function(e) {
         if (document.getElementById('pinControls').style.display === 'block') {
-            setDestinationPin(e.latLng);
+            setDestinationPin([e.latlng.lat, e.latlng.lng]);
         }
     });
 
     initEventListeners();
 }
 
-// 역지오코딩 (좌표 -> 주소)
+// 역지오코딩 (좌표 -> 주소) - Nominatim API 사용
 function reverseGeocode(location) {
-    geocoder.geocode({ location: location }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-            document.getElementById('departure').value = results[0].formatted_address;
+    const [lat, lng] = location;
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ko`)
+        .then(response => response.json())
+        .then(data => {
+            const address = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            document.getElementById('departure').value = address;
             appState.departure = {
-                address: results[0].formatted_address,
+                address: address,
                 location: location
             };
-        }
-    });
+        })
+        .catch(error => {
+            console.error('역지오코딩 오류:', error);
+            document.getElementById('departure').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            appState.departure = {
+                address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+                location: location
+            };
+        });
 }
 
 // 이벤트 리스너 초기화
@@ -126,6 +142,13 @@ function initEventListeners() {
 
     // 목적지 찾기 버튼
     document.getElementById('findDestBtn').addEventListener('click', findDestination);
+
+    // Enter 키로 목적지 찾기
+    document.getElementById('destination').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            findDestination();
+        }
+    });
 
     // 핀 확인 버튼
     document.getElementById('confirmPinBtn').addEventListener('click', confirmPin);
@@ -152,8 +175,13 @@ function initEventListeners() {
             return;
         }
         showPage('travelInfoPage');
-        loadTravelInfo();
-        displayRoute();
+
+        // 지도 크기 재조정 (페이지 전환 후)
+        setTimeout(() => {
+            routeMap.invalidateSize();
+            loadTravelInfo();
+            displayRoute();
+        }, 100);
     });
 
     // 교통수단 탭
@@ -179,7 +207,7 @@ function initEventListeners() {
     });
 }
 
-// 목적지 찾기
+// 목적지 찾기 - Nominatim Geocoding API 사용
 function findDestination() {
     const destination = document.getElementById('destination').value;
     if (!destination) {
@@ -187,33 +215,46 @@ function findDestination() {
         return;
     }
 
-    geocoder.geocode({ address: destination }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-            destinationLocation = results[0].geometry.location;
+    // Nominatim API로 주소 검색
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&accept-language=ko&limit=1`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const result = data[0];
+                destinationLocation = [parseFloat(result.lat), parseFloat(result.lon)];
 
-            // 지도 이동
-            map.setCenter(destinationLocation);
-            map.setZoom(16);
+                // 지도 이동
+                map.setView(destinationLocation, 16);
 
-            // 기존 마커 제거
-            if (destinationMarker) {
-                destinationMarker.setMap(null);
+                // 기존 마커 제거
+                if (destinationMarker) {
+                    map.removeLayer(destinationMarker);
+                }
+
+                // 목적지 마커 생성
+                destinationMarker = L.marker(destinationLocation, {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+
+                destinationMarker.bindPopup('목적지').openPopup();
+
+                // 핀 설정 컨트롤 표시
+                document.getElementById('pinControls').style.display = 'block';
+            } else {
+                alert('목적지를 찾을 수 없습니다. 다시 시도해주세요.');
             }
-
-            // 목적지 마커 생성
-            destinationMarker = new google.maps.Marker({
-                position: destinationLocation,
-                map: map,
-                animation: google.maps.Animation.DROP,
-                title: '목적지'
-            });
-
-            // 핀 설정 컨트롤 표시
-            document.getElementById('pinControls').style.display = 'block';
-        } else {
-            alert('목적지를 찾을 수 없습니다. 다시 시도해주세요.');
-        }
-    });
+        })
+        .catch(error => {
+            console.error('지오코딩 오류:', error);
+            alert('목적지 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+        });
 }
 
 // 목적지 핀 설정
@@ -222,18 +263,22 @@ function setDestinationPin(location) {
 
     // 기존 핀 제거
     if (currentPin) {
-        currentPin.setMap(null);
+        map.removeLayer(currentPin);
     }
 
     // 새 핀 생성
-    currentPin = new google.maps.Marker({
-        position: location,
-        map: map,
-        icon: {
-            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-        },
-        title: '선택한 목적지'
-    });
+    currentPin = L.marker(location, {
+        icon: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        })
+    }).addTo(map);
+
+    currentPin.bindPopup('선택한 목적지').openPopup();
 }
 
 // 핀 확인
@@ -243,24 +288,43 @@ function confirmPin() {
         return;
     }
 
-    geocoder.geocode({ location: destinationLocation }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-            document.getElementById('destination').value = results[0].formatted_address;
+    const [lat, lng] = destinationLocation;
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ko`)
+        .then(response => response.json())
+        .then(data => {
+            const address = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            document.getElementById('destination').value = address;
             appState.destination = {
-                address: results[0].formatted_address,
+                address: address,
                 location: destinationLocation
             };
 
             document.getElementById('pinControls').style.display = 'none';
             alert('목적지가 설정되었습니다.');
-        }
-    });
+        })
+        .catch(error => {
+            console.error('역지오코딩 오류:', error);
+            const address = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            document.getElementById('destination').value = address;
+            appState.destination = {
+                address: address,
+                location: destinationLocation
+            };
+            document.getElementById('pinControls').style.display = 'none';
+            alert('목적지가 설정되었습니다.');
+        });
 }
 
 // 페이지 전환
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
+
+    // 지도가 있는 페이지로 전환 시 크기 재조정
+    if (pageId === 'mainPage') {
+        setTimeout(() => map.invalidateSize(), 100);
+    }
 }
 
 // 교통수단 정보 로드
@@ -594,20 +658,48 @@ function displayRoute() {
         return;
     }
 
-    const request = {
-        origin: appState.departure.location,
-        destination: appState.destination.location,
-        travelMode: google.maps.TravelMode.DRIVING
-    };
+    // 기존 라우팅 컨트롤 제거
+    if (routingControl) {
+        routeMap.removeControl(routingControl);
+    }
 
-    directionsService.route(request, (result, status) => {
-        if (status === 'OK') {
-            directionsRenderer.setDirections(result);
-        } else {
-            console.error('경로를 표시할 수 없습니다:', status);
+    // Leaflet Routing Machine으로 경로 표시
+    routingControl = L.Routing.control({
+        waypoints: [
+            L.latLng(appState.departure.location[0], appState.departure.location[1]),
+            L.latLng(appState.destination.location[0], appState.destination.location[1])
+        ],
+        routeWhileDragging: false,
+        showAlternatives: false,
+        lineOptions: {
+            styles: [{ color: '#4285f4', opacity: 0.8, weight: 6 }]
+        },
+        createMarker: function(i, waypoint, n) {
+            const marker = L.marker(waypoint.latLng, {
+                icon: L.icon({
+                    iconUrl: i === 0
+                        ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png'
+                        : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            });
+
+            marker.bindPopup(i === 0 ? '출발지' : '목적지');
+            return marker;
         }
+    }).addTo(routeMap);
+
+    // 라우팅 오류 처리
+    routingControl.on('routingerror', function(e) {
+        console.error('경로를 찾을 수 없습니다:', e);
+        alert('경로를 표시할 수 없습니다. 출발지와 목적지를 확인해주세요.');
     });
 }
 
-// 윈도우 로드 시 초기화
+// 윈도우 로드 시 전역 함수 등록
 window.showPage = showPage;
+window.selectTransport = selectTransport;

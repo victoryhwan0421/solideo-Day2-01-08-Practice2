@@ -5,7 +5,7 @@ HTML, CSS, JavaScript로 제작된 웹 기반 여행 계획 애플리케이션�
 ## 주요 기능
 
 ### 1. 메인 화면
-- 구글 맵을 이용한 현재 위치 표시
+- OpenStreetMap (Leaflet.js)을 이용한 현재 위치 표시
 - 실시간 위치 정보 제공
 - '여행 탐색' 버튼으로 여행 계획 시작
 
@@ -33,36 +33,15 @@ HTML, CSS, JavaScript로 제작된 웹 기반 여행 계획 애플리케이션�
 
 ## 설치 및 실행
 
-### 1. Google Maps API 키 발급
+### ✨ API 키 불필요!
 
-이 앱을 사용하려면 Google Maps API 키가 필요합니다.
+이 앱은 **무료 오픈소스 지도 라이브러리**를 사용하므로 **API 키가 필요 없습니다**!
+- Leaflet.js: 지도 표시
+- OpenStreetMap: 지도 타일
+- Nominatim: 주소 검색
+- Leaflet Routing Machine: 경로 표시
 
-1. [Google Cloud Console](https://console.cloud.google.com/)에 접속
-2. 새 프로젝트 생성 또는 기존 프로젝트 선택
-3. "API 및 서비스" > "라이브러리"로 이동
-4. 다음 API들을 활성화:
-   - Maps JavaScript API
-   - Places API
-   - Geocoding API
-   - Directions API
-5. "API 및 서비스" > "사용자 인증 정보"로 이동
-6. "사용자 인증 정보 만들기" > "API 키" 선택
-7. API 키 복사
-
-### 2. API 키 설정
-
-`index.html` 파일을 열고, 다음 부분을 찾아 YOUR_API_KEY를 실제 API 키로 교체하세요:
-
-```html
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap" async defer></script>
-```
-
-예시:
-```html
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxxxxxxxxxxxxxxxxxxxxxx&libraries=places,geometry&callback=initMap" async defer></script>
-```
-
-### 3. 로컬 서버 실행
+### 로컬 서버 실행
 
 보안상의 이유로 파일을 직접 열면 일부 기능이 작동하지 않을 수 있습니다.
 로컬 서버를 실행하여 앱을 사용하세요.
@@ -93,7 +72,7 @@ http-server -p 8000
 2. index.html 파일을 마우스 우클릭
 3. "Open with Live Server" 선택
 
-### 4. 브라우저에서 열기
+### 브라우저에서 열기
 
 브라우저에서 다음 주소로 접속:
 ```
@@ -116,10 +95,11 @@ personal-travel-app/
 ### 1단계: 여행 계획 시작
 1. 메인 화면에서 "여행 탐색" 버튼 클릭
 2. 출발지는 현재 위치가 자동으로 입력됩니다
+   - 브라우저에서 위치 권한을 허용해주세요
 
 ### 2단계: 목적지 설정
-1. 목적지 입력창에 원하는 장소 입력
-2. "찾기" 버튼 클릭하여 지도에서 확인
+1. 목적지 입력창에 원하는 장소 입력 (예: "부산역", "해운대")
+2. "찾기" 버튼 클릭하거나 Enter 키 입력하여 지도에서 확인
 3. 필요시 지도를 클릭하여 정확한 위치 설정
 4. "위치 확인" 버튼으로 목적지 확정
 
@@ -130,7 +110,7 @@ personal-travel-app/
 
 ### 4단계: 교통수단 선택
 1. 7개 탭 중 원하는 교통수단 선택
-2. 리스트에서 구체적인 옵션 선택
+2. 리스트에서 구체적인 옵션 선택 (클릭하면 파란색 테두리로 표시)
 3. "여행 정보 보기" 버튼 클릭
 
 ### 5단계: 여행 정보 확인
@@ -141,9 +121,12 @@ personal-travel-app/
 ## 기술 스택
 
 - **HTML5**: 시맨틱 마크업
-- **CSS3**: 플렉스박스, 그리드, 애니메이션
+- **CSS3**: 플렉스박스, 반응형 디자인, 애니메이션
 - **JavaScript (ES6+)**: 비동기 처리, 이벤트 핸들링
-- **Google Maps API**: 지도, 경로, 위치 검색 기능
+- **Leaflet.js**: 오픈소스 지도 라이브러리
+- **OpenStreetMap**: 무료 지도 타일
+- **Nominatim API**: 무료 지오코딩 (주소 ↔ 좌표 변환)
+- **Leaflet Routing Machine**: 경로 찾기 및 시각화
 
 ## 브라우저 지원
 
@@ -151,6 +134,21 @@ personal-travel-app/
 - Firefox
 - Safari
 - Edge
+- 모던 브라우저 모두 지원
+
+## 주요 특징
+
+### API 키 불필요
+Google Maps와 달리 Leaflet과 OpenStreetMap은 완전 무료이며 API 키가 필요 없습니다.
+
+### 실시간 위치 추적
+브라우저의 Geolocation API를 사용하여 현재 위치를 자동으로 감지합니다.
+
+### 무료 지오코딩
+Nominatim API를 사용하여 주소를 좌표로 변환합니다. (사용 제한: 초당 1회 요청)
+
+### 경로 시각화
+Leaflet Routing Machine을 사용하여 출발지에서 목적지까지의 경로를 표시합니다.
 
 ## 향후 개선 사항
 
@@ -163,7 +161,7 @@ personal-travel-app/
    - 비행기: 항공 스케줄 API
 
 2. **맛집/관광지 정보**
-   - Google Places API (이미 포함됨)
+   - Overpass API (OpenStreetMap 데이터)
    - 카카오 로컬 API
    - 네이버 지역 검색 API
 
@@ -173,16 +171,63 @@ personal-travel-app/
    - 날씨 정보 통합
    - 숙박 정보 추가
    - 예산 계산기
+   - 오프라인 지도 지원
 
 ## 주의사항
 
-1. **API 키 보안**: 프로덕션 환경에서는 API 키를 환경 변수로 관리하고, 도메인 제한을 설정하세요.
-2. **위치 권한**: 브라우저에서 위치 정보 접근 권한을 허용해야 현재 위치가 표시됩니다.
-3. **HTTPS**: 위치 정보 기능은 HTTPS 환경에서만 작동합니다. (localhost는 예외)
+1. **위치 권한**: 브라우저에서 위치 정보 접근 권한을 허용해야 현재 위치가 표시됩니다.
+2. **HTTPS**: 위치 정보 기능은 HTTPS 환경에서만 작동합니다. (localhost는 예외)
+3. **Nominatim 사용 제한**:
+   - Nominatim API는 초당 1회 요청 제한이 있습니다.
+   - 상업적 용도로 대량 사용 시 자체 서버 구축을 권장합니다.
+4. **경로 표시**:
+   - 경로는 OSRM (Open Source Routing Machine) 서버를 사용합니다.
+   - 인터넷 연결이 필요합니다.
+
+## 오류 해결
+
+### 지도가 표시되지 않는 경우
+1. 브라우저 콘솔(F12)에서 오류 메시지 확인
+2. 로컬 서버로 실행하고 있는지 확인 (파일 직접 열기 X)
+3. 인터넷 연결 확인 (CDN에서 라이브러리 로드)
+
+### 위치를 찾을 수 없는 경우
+1. 브라우저 위치 권한 허용 확인
+2. HTTPS 또는 localhost에서 실행 중인지 확인
+3. 정확한 주소나 장소명 입력 (예: "서울역", "부산 해운대")
+
+### 경로가 표시되지 않는 경우
+1. 출발지와 목적지가 모두 설정되었는지 확인
+2. 인터넷 연결 확인
+3. 브라우저 콘솔에서 라우팅 오류 확인
+
+## 데모 사용 예시
+
+1. **서울 → 부산 여행**
+   - 출발지: 현재 위치 (또는 "서울역")
+   - 목적지: "부산역" 또는 "해운대"
+   - 교통수단: KTX (2시간 40분, 59,800원)
+
+2. **제주도 여행**
+   - 출발지: "김포공항"
+   - 목적지: "제주국제공항"
+   - 교통수단: 비행기 (1시간, 65,000원~)
+
+3. **가까운 맛집 찾기**
+   - 목적지 설정 후 여행 정보 페이지에서 "맛집" 탭 확인
 
 ## 라이선스
 
 이 프로젝트는 개인 학습 및 비상업적 용도로 사용할 수 있습니다.
+
+### 사용된 오픈소스 라이선스
+- Leaflet.js: BSD 2-Clause License
+- OpenStreetMap: Open Database License (ODbL)
+- Nominatim: GNU GPL v2
+
+## 개발자 정보
+
+이 프로젝트는 웹 기반 여행 계획 도구의 프로토타입입니다.
 
 ## 문의
 
