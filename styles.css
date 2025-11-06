@@ -1,0 +1,485 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* 페이지 전환 */
+.page {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 헤더 */
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
+}
+
+header h1 {
+    color: white;
+    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 버튼 스타일 */
+.explore-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+    background: #357ae8;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: white;
+}
+
+/* 지도 */
+#map, #routeMap {
+    width: 100%;
+    height: 100%;
+}
+
+/* 팝업 */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup.active {
+    display: flex;
+}
+
+.popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+.popup-content h2 {
+    margin-bottom: 24px;
+    color: #333;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4285f4;
+}
+
+.input-with-btn {
+    display: flex;
+    gap: 8px;
+}
+
+.input-with-btn input {
+    flex: 1;
+}
+
+.find-btn {
+    background: #34a853;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+}
+
+.find-btn:hover {
+    background: #2d8e47;
+}
+
+.pin-controls {
+    background: #e8f0fe;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.pin-controls p {
+    color: #1967d2;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.confirm-btn {
+    background: #1967d2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.confirm-btn:hover {
+    background: #1557b0;
+}
+
+.next-btn {
+    width: 100%;
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.next-btn:hover {
+    background: #357ae8;
+}
+
+/* 교통수단 페이지 */
+#transportPage {
+    padding-top: 80px;
+}
+
+.tabs {
+    display: flex;
+    padding: 0 20px;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid #ddd;
+    background: white;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: #4285f4;
+}
+
+.tab-btn.active {
+    color: #4285f4;
+    border-bottom-color: #4285f4;
+}
+
+.tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.transport-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.transport-item {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.transport-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.transport-item.selected {
+    border: 2px solid #4285f4;
+}
+
+.transport-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.transport-type {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.transport-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #4285f4;
+}
+
+.transport-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.transport-route {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.route-arrow {
+    color: #999;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 14px;
+}
+
+#nextToTravelInfoBtn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 여행 정보 페이지 */
+#travelInfoPage {
+    padding-top: 80px;
+}
+
+.travel-info-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 80px);
+}
+
+.sidebar {
+    width: 400px;
+    background: white;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.info-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.info-tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.info-tab-btn:hover {
+    color: #4285f4;
+}
+
+.info-tab-btn.active {
+    color: #4285f4;
+    border-bottom-color: #4285f4;
+}
+
+.info-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.info-item {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: #e8f0fe;
+}
+
+.info-item-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.info-item-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.info-item-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #999;
+}
+
+.map-container {
+    flex: 1;
+    position: relative;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-height: 40vh;
+    }
+
+    .travel-info-container {
+        flex-direction: column;
+    }
+
+    .map-container {
+        min-height: 60vh;
+    }
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

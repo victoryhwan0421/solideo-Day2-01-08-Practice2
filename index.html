@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 여행앱</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 메인 화면 -->
+    <div id="mainPage" class="page active">
+        <header>
+            <button id="exploreTravelBtn" class="explore-btn">여행 탐색</button>
+        </header>
+        <div id="map"></div>
+    </div>
+
+    <!-- 여행 탐색 팝업 -->
+    <div id="travelPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h2>여행 계획</h2>
+
+            <div class="form-group">
+                <label for="departure">출발지</label>
+                <input type="text" id="departure" placeholder="현재 위치">
+            </div>
+
+            <div class="form-group">
+                <label for="destination">목적지</label>
+                <div class="input-with-btn">
+                    <input type="text" id="destination" placeholder="목적지를 입력하세요">
+                    <button id="findDestBtn" class="find-btn">찾기</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="departureTime">출발 시간</label>
+                <input type="datetime-local" id="departureTime">
+            </div>
+
+            <div class="form-group">
+                <label for="travelDuration">여행 기간 (일)</label>
+                <input type="number" id="travelDuration" min="1" value="1">
+            </div>
+
+            <div class="pin-controls" id="pinControls" style="display: none;">
+                <p>지도를 클릭하여 정확한 목적지를 설정하세요</p>
+                <button id="confirmPinBtn" class="confirm-btn">위치 확인</button>
+            </div>
+
+            <button id="nextToTransportBtn" class="next-btn">교통수단 선택하기</button>
+        </div>
+    </div>
+
+    <!-- 교통수단 페이지 -->
+    <div id="transportPage" class="page">
+        <header>
+            <button class="back-btn" onclick="showPage('mainPage')">← 뒤로</button>
+            <h1>교통수단 선택</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="bus">버스</button>
+            <button class="tab-btn" data-tab="train">기차</button>
+            <button class="tab-btn" data-tab="plane">비행기</button>
+            <button class="tab-btn" data-tab="car">자동차</button>
+            <button class="tab-btn" data-tab="bike">자전거</button>
+            <button class="tab-btn" data-tab="minTime">최소시간</button>
+            <button class="tab-btn" data-tab="minCost">최소비용</button>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="busTab">
+                <div class="transport-list" id="busList">
+                    <div class="loading">교통 정보를 불러오는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="trainTab">
+                <div class="transport-list" id="trainList">
+                    <div class="loading">교통 정보를 불러오는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="planeTab">
+                <div class="transport-list" id="planeList">
+                    <div class="loading">교통 정보를 불러오는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="carTab">
+                <div class="transport-list" id="carList">
+                    <div class="loading">경로 정보를 불러오는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="bikeTab">
+                <div class="transport-list" id="bikeList">
+                    <div class="loading">경로 정보를 불러오는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="minTimeTab">
+                <div class="transport-list" id="minTimeList">
+                    <div class="loading">최적 경로를 계산하는 중...</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="minCostTab">
+                <div class="transport-list" id="minCostList">
+                    <div class="loading">최적 경로를 계산하는 중...</div>
+                </div>
+            </div>
+        </div>
+
+        <button id="nextToTravelInfoBtn" class="next-btn">여행 정보 보기</button>
+    </div>
+
+    <!-- 여행 정보 페이지 -->
+    <div id="travelInfoPage" class="page">
+        <header>
+            <button class="back-btn" onclick="showPage('transportPage')">← 뒤로</button>
+            <h1>여행 정보</h1>
+        </header>
+
+        <div class="travel-info-container">
+            <div class="sidebar">
+                <div class="info-tabs">
+                    <button class="info-tab-btn active" data-info="restaurants">맛집</button>
+                    <button class="info-tab-btn" data-info="attractions">관광지</button>
+                </div>
+
+                <div class="info-list" id="infoList">
+                    <div class="loading">정보를 불러오는 중...</div>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div id="routeMap"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap" async defer></script>
+    <script src="app.js"></script>
+</body>
+</html>
