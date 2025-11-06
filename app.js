@@ -8,13 +8,17 @@ let originMarker;
 let currentPin;
 let routingControl;
 
+// ODsay API 키 (https://lab.odsay.com/ 에서 발급 필요)
+const ODSAY_API_KEY = 'YOUR_ODSAY_API_KEY';  // 여기에 실제 API 키를 입력하세요
+
 // 앱 상태
 const appState = {
     departure: null,
     destination: null,
     departureTime: null,
     travelDuration: 1,
-    selectedTransport: null
+    selectedTransport: null,
+    hasSeenHomePage: false // 홈페이지를 본 적이 있는지 추적
 };
 
 // 페이지 로드 시 초기화
@@ -142,13 +146,22 @@ function initEventListeners() {
         closePlanSidebar();
     });
 
-    // 목적지 찾기 버튼
-    document.getElementById('findDestBtn').addEventListener('click', findDestination);
-
     // Enter 키로 목적지 찾기
     document.getElementById('destination').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             findDestination();
+        }
+    });
+
+    // 내 위치 버튼
+    document.getElementById('myLocationBtn').addEventListener('click', () => {
+        if (currentLocation) {
+            map.setView(currentLocation, 15);
+            if (originMarker) {
+                originMarker.openPopup();
+            }
+        } else {
+            alert('현재 위치를 가져올 수 없습니다.');
         }
     });
 
@@ -233,7 +246,11 @@ function initEventListeners() {
 
 // 사이드바 제어 함수들
 function openPlanSidebar() {
-    document.getElementById('homeContent').classList.add('hidden');
+    // 홈페이지를 처음 보는 경우에만 숨기기
+    if (!appState.hasSeenHomePage) {
+        document.getElementById('homeContent').classList.add('hidden');
+        appState.hasSeenHomePage = true;
+    }
     document.getElementById('planSidebar').classList.add('active');
     setTimeout(() => map.invalidateSize(), 100);
 }
@@ -241,7 +258,6 @@ function openPlanSidebar() {
 function closePlanSidebar() {
     document.getElementById('planSidebar').classList.remove('active');
     setTimeout(() => {
-        document.getElementById('homeContent').classList.remove('hidden');
         map.invalidateSize();
     }, 400);
 }
@@ -254,7 +270,6 @@ function openTransportSidebar() {
 function closeTransportSidebar() {
     document.getElementById('transportSidebar').classList.remove('active');
     setTimeout(() => {
-        document.getElementById('homeContent').classList.remove('hidden');
         map.invalidateSize();
     }, 400);
 }
@@ -381,12 +396,58 @@ function confirmPin() {
         });
 }
 
+// ODsay API로 대중교통 정보 가져오기
+async function fetchPublicTransportInfo() {
+    if (!appState.departure || !appState.destination) {
+        return null;
+    }
+
+    // API 키가 설정되지 않은 경우
+    if (ODSAY_API_KEY === 'YOUR_ODSAY_API_KEY') {
+        console.warn('ODsay API 키가 설정되지 않았습니다. 샘플 데이터를 사용합니다.');
+        return null;
+    }
+
+    const [startLat, startLng] = appState.departure.location;
+    const [endLat, endLng] = appState.destination.location;
+
+    try {
+        const response = await fetch(
+            `https://api.odsay.com/v1/api/searchPubTransPath?` +
+            `SX=${startLng}&SY=${startLat}&EX=${endLng}&EY=${endLat}&` +
+            `apiKey=${ODSAY_API_KEY}`
+        );
+
+        if (!response.ok) {
+            throw new Error('API 요청 실패');
+        }
+
+        const data = await response.json();
+        return data.result;
+    } catch (error) {
+        console.error('대중교통 정보 가져오기 실패:', error);
+        return null;
+    }
+}
+
 // 교통수단 정보 로드
-function loadTransportInfo(type = 'bus') {
+async function loadTransportInfo(type = 'bus') {
     const listId = type + 'List';
     const listElement = document.getElementById(listId);
 
-    // 샘플 데이터 생성
+    // 실제 API 데이터 가져오기 시도
+    let apiData = null;
+    if (type === 'bus' || type === 'train' || type === 'plane' || type === 'minTime' || type === 'minCost') {
+        apiData = await fetchPublicTransportInfo();
+    }
+
+    // API 데이터가 있고 유효한 경우 사용
+    if (apiData && apiData.path && apiData.path.length > 0) {
+        renderRealTransportData(apiData, type, listElement);
+        return;
+    }
+
+    // API 데이터가 없으면 샘플 데이터 사용
     let transportData = [];
 
     switch(type) {
@@ -599,6 +660,83 @@ function loadTransportInfo(type = 'bus') {
             </div>
         </div>
     `).join('');
+}
+
+// 실제 API 데이터 렌더링
+function renderRealTransportData(apiData, type, listElement) {
+    const paths = apiData.path;
+
+    // 타입에 따라 필터링
+    let filteredPaths = paths;
+
+    if (type === 'bus') {
+        // 버스가 포함된 경로만 필터링
+        filteredPaths = paths.filter(path =>
+            path.subPath.some(sub => sub.trafficType === 2) // 2 = 버스
+        );
+    } else if (type === 'train') {
+        // 지하철/기차가 포함된 경로만 필터링
+        filteredPaths = paths.filter(path =>
+            path.subPath.some(sub => sub.trafficType === 1) // 1 = 지하철
+        );
+    } else if (type === 'minTime') {
+        // 시간 순으로 정렬
+        filteredPaths = paths.sort((a, b) => a.info.totalTime - b.info.totalTime);
+    } else if (type === 'minCost') {
+        // 비용 순으로 정렬
+        filteredPaths = paths.sort((a, b) => a.info.payment - b.info.payment);
+    }
+
+    // 상위 5개만 표시
+    filteredPaths = filteredPaths.slice(0, 5);
+
+    if (filteredPaths.length === 0) {
+        listElement.innerHTML = '<div class="loading">해당 교통수단으로는 경로를 찾을 수 없습니다.</div>';
+        return;
+    }
+
+    // HTML 렌더링
+    listElement.innerHTML = filteredPaths.map((path, index) => {
+        const info = path.info;
+        const hours = Math.floor(info.totalTime / 60);
+        const minutes = info.totalTime % 60;
+        const timeStr = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+
+        // 경로 설명 생성
+        let routeDesc = [];
+        path.subPath.forEach(sub => {
+            if (sub.trafficType === 1) { // 지하철
+                routeDesc.push(`${sub.lane[0].name}`);
+            } else if (sub.trafficType === 2) { // 버스
+                routeDesc.push(`${sub.lane[0].busNo}번 버스`);
+            }
+        });
+
+        const routeText = routeDesc.length > 0 ? routeDesc.join(' → ') : '도보 이동';
+
+        // 순위 표시
+        let rank = '';
+        if (type === 'minTime' && index === 0) rank = '1위 - 최단시간';
+        else if (type === 'minCost' && index === 0) rank = '1위 - 최저비용';
+        else if (index === 1) rank = '2위';
+        else if (index === 2) rank = '3위';
+
+        return `
+            <div class="transport-item" onclick="selectTransport('${type}', ${index})">
+                <div class="transport-header">
+                    <span class="transport-type">${routeText}</span>
+                    <span class="transport-price">${info.payment.toLocaleString()}원</span>
+                </div>
+                <div class="transport-details">
+                    ${rank ? `<div style="color: #ea4335; font-weight: 600;">${rank}</div>` : ''}
+                    <div>소요시간: ${timeStr}</div>
+                    <div>환승: ${info.busTransitCount + info.subwayTransitCount}회</div>
+                    <div>거리: ${(info.totalDistance / 1000).toFixed(1)}km</div>
+                    <div>도보: ${info.totalWalk}m</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // 교통수단 선택

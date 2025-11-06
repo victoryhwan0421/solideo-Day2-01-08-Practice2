@@ -13,6 +13,14 @@
     <!-- 지도 배경 (항상 표시) -->
     <div id="map" class="map-background"></div>
 
+    <!-- 내 위치 버튼 -->
+    <button id="myLocationBtn" class="my-location-btn" title="내 위치로 이동">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            <path d="M12 2V5M12 19V22M22 12H19M5 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+
     <!-- 메인 홈페이지 콘텐츠 -->
     <div id="homeContent" class="home-content">
         <!-- 네비게이션 -->
@@ -71,10 +79,7 @@
 
             <div class="form-group">
                 <label for="destination">목적지</label>
-                <div class="input-with-btn">
-                    <input type="text" id="destination" placeholder="목적지를 입력하세요">
-                    <button id="findDestBtn" class="find-btn">찾기</button>
-                </div>
+                <input type="text" id="destination" placeholder="목적지를 입력하고 Enter를 누르세요">
             </div>
 
             <div class="form-group">
