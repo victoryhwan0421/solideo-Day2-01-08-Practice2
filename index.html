@@ -54,7 +54,7 @@
             <div class="feature-card">
                 <div class="feature-icon">🚄</div>
                 <h3 class="feature-title">교통수단 비교</h3>
-                <p class="feature-desc">버스, 기차, 비행기 등 다양한 옵션 비교</p>
+                <p class="feature-desc">버스, 기차, 자동차 등 다양한 옵션 비교</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🍽️</div>
@@ -114,31 +114,47 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="bus">버스</button>
             <button class="tab-btn" data-tab="train">기차</button>
-            <button class="tab-btn" data-tab="plane">비행기</button>
             <button class="tab-btn" data-tab="car">자동차</button>
             <button class="tab-btn" data-tab="bike">자전거</button>
-            <button class="tab-btn" data-tab="minTime">최소시간</button>
-            <button class="tab-btn" data-tab="minCost">최소비용</button>
         </div>
 
         <div class="sidebar-content">
             <div class="tab-content">
                 <div class="tab-pane active" id="busTab">
+                    <div class="sort-options">
+                        <label>정렬: </label>
+                        <select id="busSortSelect" class="sort-select" onchange="loadTransportInfo('bus')">
+                            <option value="default">추천순</option>
+                            <option value="time">최소 시간</option>
+                            <option value="cost">최소 비용</option>
+                        </select>
+                    </div>
                     <div class="transport-list" id="busList">
                         <div class="loading">교통 정보를 불러오는 중...</div>
                     </div>
                 </div>
                 <div class="tab-pane" id="trainTab">
+                    <div class="sort-options">
+                        <label>정렬: </label>
+                        <select id="trainSortSelect" class="sort-select" onchange="loadTransportInfo('train')">
+                            <option value="default">추천순</option>
+                            <option value="time">최소 시간</option>
+                            <option value="cost">최소 비용</option>
+                        </select>
+                    </div>
                     <div class="transport-list" id="trainList">
                         <div class="loading">교통 정보를 불러오는 중...</div>
                     </div>
                 </div>
-                <div class="tab-pane" id="planeTab">
-                    <div class="transport-list" id="planeList">
-                        <div class="loading">교통 정보를 불러오는 중...</div>
-                    </div>
-                </div>
                 <div class="tab-pane" id="carTab">
+                    <div class="sort-options">
+                        <label>경로 옵션: </label>
+                        <select id="carRouteSelect" class="sort-select" onchange="loadTransportInfo('car')">
+                            <option value="highway-time">고속도로 (최단시간)</option>
+                            <option value="highway-cost">고속도로 (최소비용)</option>
+                            <option value="national">국도</option>
+                        </select>
+                    </div>
                     <div class="transport-list" id="carList">
                         <div class="loading">경로 정보를 불러오는 중...</div>
                     </div>
@@ -146,16 +162,6 @@
                 <div class="tab-pane" id="bikeTab">
                     <div class="transport-list" id="bikeList">
                         <div class="loading">경로 정보를 불러오는 중...</div>
-                    </div>
-                </div>
-                <div class="tab-pane" id="minTimeTab">
-                    <div class="transport-list" id="minTimeList">
-                        <div class="loading">최적 경로를 계산하는 중...</div>
-                    </div>
-                </div>
-                <div class="tab-pane" id="minCostTab">
-                    <div class="transport-list" id="minCostList">
-                        <div class="loading">최적 경로를 계산하는 중...</div>
                     </div>
                 </div>
             </div>
