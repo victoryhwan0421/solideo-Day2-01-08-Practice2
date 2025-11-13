@@ -456,29 +456,41 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '고속버스',
                     price: '15,000원',
-                    departure: '서울고속버스터미널',
-                    arrival: '부산종합버스터미널',
                     time: '4시간 30분',
                     departureTime: '09:00',
-                    arrivalTime: '13:30'
+                    arrivalTime: '13:30',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '서울 고속버스터미널 (경유)', type: 'via', walkTime: '15분' },
+                        { location: '부산 종합버스터미널 (경유)', type: 'via', transitTime: '4시간' },
+                        { location: '목적지', type: 'end', walkTime: '10분' }
+                    ]
                 },
                 {
                     type: '시외버스',
                     price: '12,000원',
-                    departure: '동서울터미널',
-                    arrival: '부산서부터미널',
                     time: '5시간',
                     departureTime: '10:00',
-                    arrivalTime: '15:00'
+                    arrivalTime: '15:00',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '동서울 터미널 (경유)', type: 'via', walkTime: '20분' },
+                        { location: '부산 서부터미널 (경유)', type: 'via', transitTime: '4시간 30분' },
+                        { location: '목적지', type: 'end', walkTime: '15분' }
+                    ]
                 },
                 {
-                    type: '프리미엄 고속버스',
-                    price: '25,000원',
-                    departure: '서울고속버스터미널',
-                    arrival: '부산종합버스터미널',
-                    time: '4시간 15분',
-                    departureTime: '08:30',
-                    arrivalTime: '12:45'
+                    type: '남부터미널 고속버스',
+                    price: '14,500원',
+                    time: '4시간 40분',
+                    departureTime: '08:00',
+                    arrivalTime: '12:40',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '남부 터미널 (경유)', type: 'via', walkTime: '25분' },
+                        { location: '부산 종합버스터미널 (경유)', type: 'via', transitTime: '4시간' },
+                        { location: '목적지', type: 'end', walkTime: '10분' }
+                    ]
                 }
             ];
             break;
@@ -487,29 +499,41 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: 'KTX',
                     price: '59,800원',
-                    departure: '서울역',
-                    arrival: '부산역',
                     time: '2시간 40분',
                     departureTime: '09:00',
-                    arrivalTime: '11:40'
+                    arrivalTime: '11:40',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '서울역 (경유)', type: 'via', walkTime: '15분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '2시간 30분' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 },
                 {
                     type: 'SRT',
                     price: '52,300원',
-                    departure: '수서역',
-                    arrival: '부산역',
                     time: '2시간 50분',
                     departureTime: '10:00',
-                    arrivalTime: '12:50'
+                    arrivalTime: '12:50',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '수서역 (경유)', type: 'via', walkTime: '20분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '2시간 20분' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 },
                 {
                     type: 'ITX-새마을',
                     price: '42,100원',
-                    departure: '서울역',
-                    arrival: '부산역',
                     time: '4시간 20분',
                     departureTime: '08:30',
-                    arrivalTime: '12:50'
+                    arrivalTime: '12:50',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '용산역 (경유)', type: 'via', walkTime: '18분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '4시간' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 }
             ];
             break;
@@ -518,29 +542,41 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '대한항공',
                     price: '89,000원',
-                    departure: '김포공항',
-                    arrival: '김해공항',
-                    time: '1시간 10분',
+                    time: '1시간 10분 (공항 이동시간 별도)',
                     departureTime: '09:00',
-                    arrivalTime: '10:10'
+                    arrivalTime: '10:10',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '김포공항 (경유)', type: 'via', walkTime: '45분' },
+                        { location: '김해공항 (경유)', type: 'via', transitTime: '1시간 10분' },
+                        { location: '목적지', type: 'end', walkTime: '40분' }
+                    ]
                 },
                 {
                     type: '아시아나항공',
                     price: '85,000원',
-                    departure: '김포공항',
-                    arrival: '김해공항',
-                    time: '1시간 5분',
+                    time: '1시간 5분 (공항 이동시간 별도)',
                     departureTime: '10:30',
-                    arrivalTime: '11:35'
+                    arrivalTime: '11:35',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '김포공항 (경유)', type: 'via', walkTime: '45분' },
+                        { location: '김해공항 (경유)', type: 'via', transitTime: '1시간 5분' },
+                        { location: '목적지', type: 'end', walkTime: '40분' }
+                    ]
                 },
                 {
                     type: '제주항공',
                     price: '65,000원',
-                    departure: '김포공항',
-                    arrival: '김해공항',
-                    time: '1시간 10분',
+                    time: '1시간 10분 (공항 이동시간 별도)',
                     departureTime: '11:00',
-                    arrivalTime: '12:10'
+                    arrivalTime: '12:10',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '김포공항 (경유)', type: 'via', walkTime: '45분' },
+                        { location: '김해공항 (경유)', type: 'via', transitTime: '1시간 10분' },
+                        { location: '목적지', type: 'end', walkTime: '40분' }
+                    ]
                 }
             ];
             break;
@@ -549,10 +585,12 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '자가용 (경부고속도로)',
                     price: '통행료 약 45,000원 + 유류비',
-                    departure: '출발지',
-                    arrival: '목적지',
                     time: '약 4시간 30분',
-                    distance: '약 400km'
+                    distance: '약 400km',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '목적지 (직행)', type: 'end', transitTime: '4시간 30분' }
+                    ]
                 }
             ];
             break;
@@ -561,11 +599,13 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '자전거 (국토종주 코스)',
                     price: '0원 (무료)',
-                    departure: '출발지',
-                    arrival: '목적지',
                     time: '약 2-3일',
                     distance: '약 400km',
-                    note: '숙박 및 식사 비용 별도'
+                    note: '숙박 및 식사 비용 별도',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '목적지 (국토종주 경로)', type: 'end', transitTime: '2-3일' }
+                    ]
                 }
             ];
             break;
@@ -574,32 +614,44 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '비행기 (대한항공)',
                     price: '89,000원',
-                    departure: '김포공항',
-                    arrival: '김해공항',
-                    time: '1시간 10분',
+                    time: '1시간 10분 (공항 이동시간 별도)',
                     departureTime: '09:00',
                     arrivalTime: '10:10',
-                    rank: '1위 - 최단시간'
+                    rank: '1위 - 최단시간',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '김포공항 (경유)', type: 'via', walkTime: '45분' },
+                        { location: '김해공항 (경유)', type: 'via', transitTime: '1시간 10분' },
+                        { location: '목적지', type: 'end', walkTime: '40분' }
+                    ]
                 },
                 {
                     type: 'KTX',
                     price: '59,800원',
-                    departure: '서울역',
-                    arrival: '부산역',
                     time: '2시간 40분',
                     departureTime: '09:00',
                     arrivalTime: '11:40',
-                    rank: '2위'
+                    rank: '2위',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '서울역 (경유)', type: 'via', walkTime: '15분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '2시간 30분' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 },
                 {
                     type: 'SRT',
                     price: '52,300원',
-                    departure: '수서역',
-                    arrival: '부산역',
                     time: '2시간 50분',
                     departureTime: '10:00',
                     arrivalTime: '12:50',
-                    rank: '3위'
+                    rank: '3위',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '수서역 (경유)', type: 'via', walkTime: '20분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '2시간 20분' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 }
             ];
             break;
@@ -608,58 +660,99 @@ async function loadTransportInfo(type = 'bus') {
                 {
                     type: '시외버스',
                     price: '12,000원',
-                    departure: '동서울터미널',
-                    arrival: '부산서부터미널',
                     time: '5시간',
                     departureTime: '10:00',
                     arrivalTime: '15:00',
-                    rank: '1위 - 최저비용'
+                    rank: '1위 - 최저비용',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '동서울 터미널 (경유)', type: 'via', walkTime: '20분' },
+                        { location: '부산 서부터미널 (경유)', type: 'via', transitTime: '4시간 30분' },
+                        { location: '목적지', type: 'end', walkTime: '15분' }
+                    ]
                 },
                 {
                     type: '고속버스',
                     price: '15,000원',
-                    departure: '서울고속버스터미널',
-                    arrival: '부산종합버스터미널',
                     time: '4시간 30분',
                     departureTime: '09:00',
                     arrivalTime: '13:30',
-                    rank: '2위'
+                    rank: '2위',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '서울 고속버스터미널 (경유)', type: 'via', walkTime: '15분' },
+                        { location: '부산 종합버스터미널 (경유)', type: 'via', transitTime: '4시간' },
+                        { location: '목적지', type: 'end', walkTime: '10분' }
+                    ]
                 },
                 {
                     type: 'ITX-새마을',
                     price: '42,100원',
-                    departure: '서울역',
-                    arrival: '부산역',
                     time: '4시간 20분',
                     departureTime: '08:30',
                     arrivalTime: '12:50',
-                    rank: '3위'
+                    rank: '3위',
+                    route: [
+                        { location: '현재 위치', type: 'start' },
+                        { location: '용산역 (경유)', type: 'via', walkTime: '18분' },
+                        { location: '부산역 (경유)', type: 'via', transitTime: '4시간' },
+                        { location: '목적지', type: 'end', walkTime: '12분' }
+                    ]
                 }
             ];
             break;
     }
 
     // 리스트 렌더링
-    listElement.innerHTML = transportData.map((item, index) => `
-        <div class="transport-item" onclick="selectTransport('${type}', ${index})">
-            <div class="transport-header">
-                <span class="transport-type">${item.type}</span>
-                <span class="transport-price">${item.price}</span>
-            </div>
-            <div class="transport-details">
-                ${item.rank ? `<div style="color: #ea4335; font-weight: 600;">${item.rank}</div>` : ''}
-                <div class="transport-route">
-                    <span>${item.departure}</span>
-                    <span class="route-arrow">→</span>
-                    <span>${item.arrival}</span>
+    listElement.innerHTML = transportData.map((item, index) => {
+        // 경로 단계별 표시 생성
+        let routeSteps = '';
+        if (item.route && item.route.length > 0) {
+            routeSteps = item.route.map((step, stepIndex) => {
+                let icon = '';
+                let timeInfo = '';
+
+                if (step.type === 'start') {
+                    icon = '🚶';
+                } else if (step.type === 'via') {
+                    // 교통수단에 따라 아이콘 선택
+                    if (type === 'bus' || item.type.includes('버스')) icon = '🚌';
+                    else if (type === 'train' || item.type.includes('KTX') || item.type.includes('SRT') || item.type.includes('새마을')) icon = '🚄';
+                    else if (type === 'plane' || item.type.includes('항공')) icon = '✈️';
+                    else if (type === 'car' || item.type.includes('자가용')) icon = '🚗';
+                    else if (type === 'bike' || item.type.includes('자전거')) icon = '🚴';
+                    else icon = '🚶';
+
+                    // 시간 정보 표시
+                    if (step.walkTime) timeInfo = ` (도보 ${step.walkTime})`;
+                    else if (step.transitTime) timeInfo = ` (${step.transitTime})`;
+                } else if (step.type === 'end') {
+                    icon = '🏁';
+                    if (step.walkTime) timeInfo = ` (도보 ${step.walkTime})`;
+                }
+
+                const arrow = stepIndex < item.route.length - 1 ? '<div style="text-align: center; color: #999; margin: 2px 0;">↓</div>' : '';
+                return `<div style="font-size: 13px; margin: 3px 0;">${icon} ${step.location}${timeInfo}</div>${arrow}`;
+            }).join('');
+        }
+
+        return `
+            <div class="transport-item" onclick="selectTransport('${type}', ${index})">
+                <div class="transport-header">
+                    <span class="transport-type">${item.type}</span>
+                    <span class="transport-price">${item.price}</span>
                 </div>
-                <div>소요시간: ${item.time}</div>
-                ${item.departureTime ? `<div>출발: ${item.departureTime} | 도착: ${item.arrivalTime}</div>` : ''}
-                ${item.distance ? `<div>거리: ${item.distance}</div>` : ''}
-                ${item.note ? `<div style="color: #ea4335; font-size: 12px;">${item.note}</div>` : ''}
+                <div class="transport-details">
+                    ${item.rank ? `<div style="color: #ea4335; font-weight: 600; margin-bottom: 8px;">${item.rank}</div>` : ''}
+                    ${routeSteps ? `<div class="transport-route" style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 8px 0;">${routeSteps}</div>` : ''}
+                    <div style="margin-top: 8px;">⏱️ 소요시간: ${item.time}</div>
+                    ${item.departureTime ? `<div>🕐 출발: ${item.departureTime} | 도착: ${item.arrivalTime}</div>` : ''}
+                    ${item.distance ? `<div>📏 거리: ${item.distance}</div>` : ''}
+                    ${item.note ? `<div style="color: #ea4335; font-size: 12px; margin-top: 4px;">⚠️ ${item.note}</div>` : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // 실제 API 데이터 렌더링
